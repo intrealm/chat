@@ -7,7 +7,7 @@
 	</head>
 	<body>
 		<div id="app">
-			<div id="chatbox container">	
+			<div class="chatbox container">	
 				<div class="row">
 					<p>name - {{user}}
 					</p>
@@ -16,7 +16,7 @@
 					<ul id="messageToPushTo" >
 						<li v-for="messageObj in conversation">
 							<div class="sender-marker-self" v-if="messageObj.sender==user">
-  								<div>{{messageObj.sender}}</div>{{messageObj.message}}
+  								<div>You</div>{{messageObj.message}}
 							</div>
 							<div class="sender-marker-other" v-else>
   								<div>{{messageObj.sender}}</div>{{messageObj.message}}
@@ -25,9 +25,9 @@
 					</ul>
 				</div>
 				<div class="row">
-					<textarea v-model="messageToPublish" v-on:keyup.enter="messagePublish" >
-					</textarea>
-					<button id="send-button" v-on:click="messagePublish">
+					<input class="form-control" v-model="messageToPublish" v-on:keyup.enter="messagePublish" >
+					</input>
+					<button class="btn" id="send-button" v-on:click="messagePublish">
 						send
 					</button>
 				</div>
