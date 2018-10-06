@@ -1,0 +1,74 @@
+<html>
+	<head>
+
+    	<link href="static/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<script src="static/vue/dist/vue.min.js"></script>
+		<script src="static/socket.io-client/dist/socket.io.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			<div id="chatbox container">	
+				<div class="row">
+					<p>name - {{user}}
+					</p>
+				</div>
+				<div class="row">
+					<ul id="messageToPushTo" >
+						<li v-for="messageObj in conversation">
+							<div class="sender-marker-self" v-if="messageObj.sender==user">
+  								<div>{{messageObj.sender}}</div>{{messageObj.message}}
+							</div>
+							<div class="sender-marker-other" v-else>
+  								<div>{{messageObj.sender}}</div>{{messageObj.message}}
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="row">
+					<textarea v-model="messageToPublish" v-on:keyup.enter="messagePublish" >
+					</textarea>
+					<button id="send-button" v-on:click="messagePublish">
+						send
+					</button>
+				</div>
+			<div>
+		</div>
+		<script>
+			var socket = io.connect();
+			var app = new Vue({
+				el: '#app',
+				data: {
+				messageToPublish:'',
+				message: 'Hello Vue!',
+				conversation:[],
+				user:'web-cllient'
+				},
+				methods:{
+					messagePublish:function(event)
+					{
+						if(!this.messageToPublish)
+							return;
+						var message ={ts:new Date(),message:this.messageToPublish,sender:this.user};
+						
+						socket.emit('messagePublished', message);			
+						this.conversation.push(message);
+						this.messageToPublish = '';
+					}
+				}
+
+			});	
+  			
+  			socket.once('userCreated',function(msg)
+  			{
+  				console.log('you are now'+msg);
+  				app.user = msg;
+  			});
+ 			socket.on('messageBroadcasted', function(msg){
+ 				if(msg.sender===app.user)
+ 					return;
+  				app.conversation.push(msg);
+  			});
+		</script>
+
+	</body>
+</html>
